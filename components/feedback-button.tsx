@@ -140,7 +140,8 @@ export function FeedbackButton({ language }: FeedbackButtonProps) {
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40" onClick={() => setIsOpen(false)} />
 
           {/* Modal */}
-          <div className="fixed inset-4 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg z-50">
+          <div className="fixed inset-x-4 top-8 bottom-8 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-lg z-50 overflow-y-auto max-h-[calc(100vh-4rem)]">
+
             <Card className="bg-white/95 backdrop-blur-md border shadow-2xl h-full sm:h-auto overflow-y-auto">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
