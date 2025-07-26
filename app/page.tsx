@@ -18,6 +18,9 @@ import {
   Calendar,
   Target,
   History,
+  ChevronDown,
+  Settings,
+  Zap,
 } from "lucide-react"
 import { detectUserLanguage, useTranslation, formatCurrency, type Language } from "@/lib/translations"
 import { LanguageSelector } from "@/components/language-selector"
@@ -109,6 +112,11 @@ export default function CrochetCalculatorApp() {
       results: any
     }>
   >([])
+
+  const [showComplexity, setShowComplexity] = useState(false)
+  const [showStitchCounter, setShowStitchCounter] = useState(false)
+  const [showCrochetingSpeed, setShowCrochetingSpeed] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
 
   // Difficulty multipliers
   const difficultyMultipliers = {
@@ -482,7 +490,7 @@ export default function CrochetCalculatorApp() {
 
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         <Tabs defaultValue="calculator" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 bg-black/20 backdrop-blur-md border border-white/10">
+          <TabsList className="grid w-full grid-cols-5 bg-black/20 backdrop-blur-md border border-white/10">
             <TabsTrigger value="calculator" className="flex items-center gap-2">
               <Calculator className="w-4 h-4" />
               <span className="hidden sm:inline">{t.pricing}</span>
@@ -490,10 +498,6 @@ export default function CrochetCalculatorApp() {
             <TabsTrigger value="time-calculator" className="flex items-center gap-2">
               <Clock className="w-4 h-4" />
               <span className="hidden sm:inline">{t.time}</span>
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <History className="w-4 h-4" />
-              <span className="hidden sm:inline">{t.history}</span>
             </TabsTrigger>
             <TabsTrigger value="ai-generate" className="flex items-center gap-2" disabled>
               <Sparkles className="w-4 h-4" />
@@ -593,104 +597,122 @@ export default function CrochetCalculatorApp() {
                     </div>
                   </div>
 
-                  {/* Difficulty and Complexity Section */}
-                  <div className="space-y-4 p-4 bg-rose-50 rounded-lg border border-rose-200">
-                    <h4 className="font-medium text-rose-800">{t.projectComplexity}</h4>
+                  {/* Botón de Complejidad Colapsable */}
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      onClick={() => setShowComplexity(!showComplexity)}
+                      variant="outline"
+                      className="w-full justify-between border-rose-200 text-rose-700 hover:bg-rose-50"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Settings className="w-4 h-4" />
+                        {t.projectComplexity}
+                      </span>
+                      <ChevronDown className={`w-4 h-4 transition-transform ${showComplexity ? "rotate-180" : ""}`} />
+                    </Button>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="difficultyLevel">{t.difficultyLevel}</Label>
-                        <select
-                          id="difficultyLevel"
-                          value={projectData.difficultyLevel}
-                          onChange={(e) => handleInputChange("difficultyLevel", e.target.value)}
-                          className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
-                        >
-                          <option value="beginner">{t.beginner} (1.0x)</option>
-                          <option value="intermediate">{t.intermediate} (1.3x)</option>
-                          <option value="advanced">{t.advanced} (1.6x)</option>
-                          <option value="expert">{t.expert} (2.0x)</option>
-                        </select>
-                      </div>
+                    {showComplexity && (
+                      <div className="space-y-4 p-4 bg-rose-50 rounded-lg border border-rose-200 animate-in slide-in-from-top-2">
+                        <h4 className="font-medium text-rose-800">{t.projectComplexity}</h4>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="projectType">{t.projectType}</Label>
-                        <select
-                          id="projectType"
-                          value={projectData.projectType}
-                          onChange={(e) => handleInputChange("projectType", e.target.value)}
-                          className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
-                        >
-                          <option value="accessories">{t.accessories} (1.0x)</option>
-                          <option value="clothing">{t.clothing} (1.2x)</option>
-                          <option value="home_decor">{t.homeDecor} (1.1x)</option>
-                          <option value="toys_amigurumi">{t.toysAmigurumi} (1.4x)</option>
-                          <option value="blankets">{t.blankets} (1.3x)</option>
-                          <option value="bags_purses">{t.bagsPurses} (1.2x)</option>
-                        </select>
-                      </div>
-                    </div>
+                        {/* Todo el contenido de complejidad existente */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="difficultyLevel">{t.difficultyLevel}</Label>
+                            <select
+                              id="difficultyLevel"
+                              value={projectData.difficultyLevel}
+                              onChange={(e) => handleInputChange("difficultyLevel", e.target.value)}
+                              className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
+                            >
+                              <option value="beginner">{t.beginner} (1.0x)</option>
+                              <option value="intermediate">{t.intermediate} (1.3x)</option>
+                              <option value="advanced">{t.advanced} (1.6x)</option>
+                              <option value="expert">{t.expert} (2.0x)</option>
+                            </select>
+                          </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="stitchComplexity">{t.stitchComplexity}</Label>
-                        <select
-                          id="stitchComplexity"
-                          value={projectData.stitchComplexity}
-                          onChange={(e) => handleInputChange("stitchComplexity", e.target.value)}
-                          className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
-                        >
-                          <option value="basic">{t.basicStitches} (1.0x)</option>
-                          <option value="intermediate">{t.intermediate} (1.2x)</option>
-                          <option value="advanced">{t.advanced} (1.5x)</option>
-                          <option value="intricate">{t.intricate} (1.8x)</option>
-                        </select>
-                      </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="projectType">{t.projectType}</Label>
+                            <select
+                              id="projectType"
+                              value={projectData.projectType}
+                              onChange={(e) => handleInputChange("projectType", e.target.value)}
+                              className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
+                            >
+                              <option value="accessories">{t.accessories} (1.0x)</option>
+                              <option value="clothing">{t.clothing} (1.2x)</option>
+                              <option value="home_decor">{t.homeDecor} (1.1x)</option>
+                              <option value="toys_amigurumi">{t.toysAmigurumi} (1.4x)</option>
+                              <option value="blankets">{t.blankets} (1.3x)</option>
+                              <option value="bags_purses">{t.bagsPurses} (1.2x)</option>
+                            </select>
+                          </div>
+                        </div>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="projectSize">{t.projectSize}</Label>
-                        <select
-                          id="projectSize"
-                          value={projectData.projectSize}
-                          onChange={(e) => handleInputChange("projectSize", e.target.value)}
-                          className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
-                        >
-                          <option value="small">{t.small} (1.0x)</option>
-                          <option value="medium">{t.medium} (1.2x)</option>
-                          <option value="large">{t.large} (1.4x)</option>
-                          <option value="extra_large">{t.extraLarge} (1.6x)</option>
-                        </select>
-                      </div>
-                    </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="stitchComplexity">{t.stitchComplexity}</Label>
+                            <select
+                              id="stitchComplexity"
+                              value={projectData.stitchComplexity}
+                              onChange={(e) => handleInputChange("stitchComplexity", e.target.value)}
+                              className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
+                            >
+                              <option value="basic">{t.basicStitches} (1.0x)</option>
+                              <option value="intermediate">{t.intermediate} (1.2x)</option>
+                              <option value="advanced">{t.advanced} (1.5x)</option>
+                              <option value="intricate">{t.intricate} (1.8x)</option>
+                            </select>
+                          </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="marketPosition">{t.marketPosition}</Label>
-                        <select
-                          id="marketPosition"
-                          value={projectData.marketPosition}
-                          onChange={(e) => handleInputChange("marketPosition", e.target.value)}
-                          className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
-                        >
-                          <option value="budget">{t.budgetMarket} (1.2x)</option>
-                          <option value="standard">{t.standardMarket} (1.5x)</option>
-                          <option value="premium">{t.premiumMarket} (2.0x)</option>
-                          <option value="luxury">{t.luxuryMarket} (2.5x)</option>
-                        </select>
-                      </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="projectSize">{t.projectSize}</Label>
+                            <select
+                              id="projectSize"
+                              value={projectData.projectSize}
+                              onChange={(e) => handleInputChange("projectSize", e.target.value)}
+                              className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
+                            >
+                              <option value="small">{t.small} (1.0x)</option>
+                              <option value="medium">{t.medium} (1.2x)</option>
+                              <option value="large">{t.large} (1.4x)</option>
+                              <option value="extra_large">{t.extraLarge} (1.6x)</option>
+                            </select>
+                          </div>
+                        </div>
 
-                      <div className="space-y-2 flex items-end">
-                        <label className="flex items-center space-x-2">
-                          <input
-                            type="checkbox"
-                            checked={projectData.customPattern}
-                            onChange={(e) => handleInputChange("customPattern", e.target.checked)}
-                            className="rounded border-rose-300 text-rose-600 focus:ring-rose-500"
-                          />
-                          <span className="text-sm">{t.customPattern} (+30%)</span>
-                        </label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="marketPosition">{t.marketPosition}</Label>
+                            <select
+                              id="marketPosition"
+                              value={projectData.marketPosition}
+                              onChange={(e) => handleInputChange("marketPosition", e.target.value)}
+                              className="w-full p-2 border border-rose-200 rounded-md focus:border-rose-400 focus:outline-none"
+                            >
+                              <option value="budget">{t.budgetMarket} (1.2x)</option>
+                              <option value="standard">{t.standardMarket} (1.5x)</option>
+                              <option value="premium">{t.premiumMarket} (2.0x)</option>
+                              <option value="luxury">{t.luxuryMarket} (2.5x)</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-2 flex items-end">
+                            <label className="flex items-center space-x-2">
+                              <input
+                                type="checkbox"
+                                checked={projectData.customPattern}
+                                onChange={(e) => handleInputChange("customPattern", e.target.checked)}
+                                className="rounded border-rose-300 text-rose-600 focus:ring-rose-500"
+                              />
+                              <span className="text-sm">{t.customPattern} (+30%)</span>
+                            </label>
+                          </div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
 
                   <Button
@@ -819,14 +841,228 @@ export default function CrochetCalculatorApp() {
             <div className="grid gap-6 md:grid-cols-2">
               {/* Time Input Form */}
               <Card className="bg-white/70 backdrop-blur-sm border-blue-200">
-                <CardHeader>
+                <CardHeader className="relative">
                   <CardTitle className="flex items-center gap-2 text-blue-800">
                     <Clock className="w-5 h-5" />
                     {t.timeCalculator}
                   </CardTitle>
                   <CardDescription>{t.timeCalculatorDesc}</CardDescription>
+
+                  {/* Icon-only history button in corner */}
+                  <Button
+                    type="button"
+                    onClick={() => setShowHistory(!showHistory)}
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-4 right-4 w-8 h-8 p-0 border-purple-200 text-purple-700 hover:bg-purple-50"
+                  >
+                    <History className="w-4 h-4" />
+                  </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Botones de herramientas */}
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <Button
+                      type="button"
+                      onClick={() => setShowStitchCounter(!showStitchCounter)}
+                      variant="outline"
+                      className="w-full justify-between border-indigo-200 text-indigo-700 hover:bg-indigo-50"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Target className="w-4 h-4" />
+                        {t.builtInStitchCounter}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${showStitchCounter ? "rotate-180" : ""}`}
+                      />
+                    </Button>
+                  </div>
+
+                  {/* Contador de Puntos Colapsable */}
+                  {showStitchCounter && (
+                    <div className="space-y-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200 animate-in slide-in-from-top-2">
+                      {/* Todo el contenido del contador existente */}
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-medium text-indigo-800">{t.builtInStitchCounter}</h4>
+                        <Badge variant="outline" className="border-indigo-300 text-indigo-600">
+                          {t.liveCounter}
+                        </Badge>
+                      </div>
+
+                      <div className="text-center space-y-4">
+                        <div className="bg-white rounded-lg p-6 border border-indigo-200">
+                          <div className="text-6xl font-bold text-indigo-900 mb-2">{stitchCounter.currentCount}</div>
+                          {stitchCounter.targetCount > 0 && (
+                            <div className="text-sm text-indigo-600">
+                              of {stitchCounter.targetCount} {t.stitches}
+                              <div className="w-full bg-indigo-100 rounded-full h-2 mt-2">
+                                <div
+                                  className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
+                                  style={{
+                                    width: `${Math.min(100, (stitchCounter.currentCount / stitchCounter.targetCount) * 100)}%`,
+                                  }}
+                                ></div>
+                              </div>
+                            </div>
+                          )}
+                          {stitchCounter.stitchesPerMinute > 0 && (
+                            <div className="text-sm text-indigo-600 mt-2">
+                              {t.speed}: {stitchCounter.stitchesPerMinute} {t.stitches}/min
+                            </div>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2">
+                          <Button
+                            onClick={decrementStitch}
+                            variant="outline"
+                            className="border-red-300 text-red-600 hover:bg-red-50 bg-transparent"
+                            disabled={stitchCounter.currentCount === 0}
+                          >
+                            -1
+                          </Button>
+                          <Button
+                            onClick={incrementStitch}
+                            className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold py-3"
+                          >
+                            +1
+                          </Button>
+                          <Button
+                            onClick={add10Stitches}
+                            variant="outline"
+                            className="border-green-300 text-green-600 hover:bg-green-50 bg-transparent"
+                          >
+                            +10
+                          </Button>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          {!stitchCounter.isActive ? (
+                            <Button
+                              onClick={startCounter}
+                              variant="outline"
+                              className="border-green-300 text-green-600 hover:bg-green-50 bg-transparent"
+                            >
+                              {t.startTimer}
+                            </Button>
+                          ) : (
+                            <Button
+                              onClick={stopCounter}
+                              variant="outline"
+                              className="border-orange-300 text-orange-600 hover:bg-orange-50 bg-transparent"
+                            >
+                              {t.stopTimer}
+                            </Button>
+                          )}
+                          <Button
+                            onClick={resetCounter}
+                            variant="outline"
+                            className="border-gray-300 text-gray-600 hover:bg-gray-50 bg-transparent"
+                          >
+                            {t.reset}
+                          </Button>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Label htmlFor="targetStitches" className="text-sm">
+                              {t.target}:
+                            </Label>
+                            <Input
+                              id="targetStitches"
+                              type="number"
+                              placeholder="100"
+                              className="w-20 h-8 text-sm border-indigo-200"
+                              onChange={(e) => setTargetCount(Number.parseInt(e.target.value) || 0)}
+                            />
+                            <span className="text-sm text-gray-600">{t.stitches}</span>
+                          </div>
+
+                          {stitchCounter.stitchesPerMinute > 0 && (
+                            <Button
+                              onClick={useCounterForEstimate}
+                              variant="outline"
+                              className="w-full border-indigo-300 text-indigo-600 hover:bg-indigo-50 text-sm bg-transparent"
+                            >
+                              {t.useThisSpeed} ({stitchCounter.stitchesPerMinute}/min)
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="text-xs text-indigo-600 bg-indigo-50 p-2 rounded">{t.counterTip}</div>
+                    </div>
+                  )}
+
+                  {/* Historial Colapsable */}
+                  {showHistory && (
+                    <div className="space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200 animate-in slide-in-from-top-2">
+                      <h4 className="font-medium text-purple-800">{t.projectHistory}</h4>
+                      <div className="max-h-60 overflow-y-auto space-y-3">
+                        {projectHistory.length > 0 ? (
+                          projectHistory.slice(0, 5).map((item) => (
+                            <div
+                              key={item.id}
+                              className={`p-3 rounded-lg border ${
+                                item.type === "pricing"
+                                  ? "bg-gradient-to-r from-rose-50 to-orange-50 border-rose-200"
+                                  : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+                              }`}
+                            >
+                              <div className="flex items-start justify-between mb-2">
+                                <div>
+                                  <h5
+                                    className={`font-medium text-sm ${
+                                      item.type === "pricing" ? "text-rose-800" : "text-blue-800"
+                                    }`}
+                                  >
+                                    {item.projectName || t.unnamedProject}
+                                  </h5>
+                                  <div className="flex items-center gap-2 text-xs text-gray-600">
+                                    {item.type === "pricing" ? (
+                                      <DollarSign className="w-3 h-3" />
+                                    ) : (
+                                      <Clock className="w-3 h-3" />
+                                    )}
+                                    <span>{item.timestamp.toLocaleDateString()}</span>
+                                  </div>
+                                </div>
+                                <Badge
+                                  variant="outline"
+                                  className={`text-xs ${
+                                    item.type === "pricing"
+                                      ? "border-rose-300 text-rose-600"
+                                      : "border-blue-300 text-blue-600"
+                                  }`}
+                                >
+                                  {item.type === "pricing" ? t.pricing : t.time}
+                                </Badge>
+                              </div>
+
+                              {item.type === "pricing" ? (
+                                <div className="text-xs text-rose-700">
+                                  {formatCurrency(item.results.suggestedPrice, language)} •{" "}
+                                  {item.results.adjustedTime.toFixed(1)}h
+                                </div>
+                              ) : (
+                                <div className="text-xs text-blue-700">
+                                  {item.results.adjustedTimeHours.toFixed(1)}h • {Math.ceil(item.results.estimatedDays)}{" "}
+                                  días
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        ) : (
+                          <div className="text-center py-4 text-gray-500">
+                            <History className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-xs">{t.noHistoryDesc}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Resto del formulario existente */}
                   <div className="space-y-2">
                     <Label htmlFor="timeProjectName">{t.projectName}</Label>
                     <Input
@@ -917,204 +1153,111 @@ export default function CrochetCalculatorApp() {
                     <p className="text-xs text-gray-600">{t.stitchTip}</p>
                   </div>
 
-                  {/* Personal Speed Section */}
-                  <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <h4 className="font-medium text-blue-800">{t.yourCrochetingSpeed}</h4>
+                  {/* Botón de Velocidad de Crochet Colapsable */}
+                  <div className="space-y-2">
+                    <Button
+                      type="button"
+                      onClick={() => setShowCrochetingSpeed(!showCrochetingSpeed)}
+                      variant="outline"
+                      className="w-full justify-between border-blue-200 text-blue-700 hover:bg-blue-50"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Zap className="w-4 h-4" />
+                        {t.yourCrochetingSpeed}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 transition-transform ${showCrochetingSpeed ? "rotate-180" : ""}`}
+                      />
+                    </Button>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="userSkillLevel">{t.yourSkillLevel}</Label>
-                        <select
-                          id="userSkillLevel"
-                          value={timeData.userSkillLevel}
-                          onChange={(e) => handleTimeInputChange("userSkillLevel", e.target.value)}
-                          className="w-full p-2 border border-blue-200 rounded-md focus:border-blue-400 focus:outline-none"
-                        >
-                          <option value="beginner">{t.beginnerSlower}</option>
-                          <option value="intermediate">{t.intermediate}</option>
-                          <option value="advanced">{t.advanced}</option>
-                          <option value="expert">{t.expertFaster}</option>
-                        </select>
-                      </div>
+                    {showCrochetingSpeed && (
+                      <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200 animate-in slide-in-from-top-2">
+                        <h4 className="font-medium text-blue-800">{t.yourCrochetingSpeed}</h4>
 
-                      <div className="space-y-2">
-                        <Label htmlFor="crochetsPerMinute">{t.stitchesPerMinute}</Label>
-                        <Input
-                          id="crochetsPerMinute"
-                          type="number"
-                          placeholder="15"
-                          value={timeData.crochetsPerMinute}
-                          onChange={(e) => handleTimeInputChange("crochetsPerMinute", e.target.value)}
-                          className="border-blue-200 focus:border-blue-400"
-                        />
-                        <p className="text-xs text-gray-600">{t.averageSpeed}</p>
-                      </div>
-                    </div>
+                        {/* Todo el contenido de velocidad existente */}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="userSkillLevel">{t.yourSkillLevel}</Label>
+                            <select
+                              id="userSkillLevel"
+                              value={timeData.userSkillLevel}
+                              onChange={(e) => handleTimeInputChange("userSkillLevel", e.target.value)}
+                              className="w-full p-2 border border-blue-200 rounded-md focus:border-blue-400 focus:outline-none"
+                            >
+                              <option value="beginner">{t.beginnerSlower}</option>
+                              <option value="intermediate">{t.intermediate}</option>
+                              <option value="advanced">{t.advanced}</option>
+                              <option value="expert">{t.expertFaster}</option>
+                            </select>
+                          </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="hoursPerDay">{t.hoursPerDay}</Label>
-                        <Input
-                          id="hoursPerDay"
-                          type="number"
-                          step="0.5"
-                          placeholder="2"
-                          value={timeData.hoursPerDay}
-                          onChange={(e) => handleTimeInputChange("hoursPerDay", e.target.value)}
-                          className="border-blue-200 focus:border-blue-400"
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="daysPerWeek">{t.daysPerWeek}</Label>
-                        <Input
-                          id="daysPerWeek"
-                          type="number"
-                          placeholder="5"
-                          value={timeData.daysPerWeek}
-                          onChange={(e) => handleTimeInputChange("daysPerWeek", e.target.value)}
-                          className="border-blue-200 focus:border-blue-400"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2">
-                        <input
-                          type="checkbox"
-                          checked={timeData.includeBreaks}
-                          onChange={(e) => handleTimeInputChange("includeBreaks", e.target.checked)}
-                          className="rounded border-blue-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm">{t.includeBreaks}</span>
-                      </label>
-                      {timeData.includeBreaks && (
-                        <div className="ml-6 space-y-2">
-                          <Label htmlFor="breakPercentage">{t.breakTime}</Label>
-                          <Input
-                            id="breakPercentage"
-                            type="number"
-                            placeholder="20"
-                            value={timeData.breakPercentage}
-                            onChange={(e) => handleTimeInputChange("breakPercentage", e.target.value)}
-                            className="border-blue-200 focus:border-blue-400 w-20"
-                          />
+                          <div className="space-y-2">
+                            <Label htmlFor="crochetsPerMinute">{t.stitchesPerMinute}</Label>
+                            <Input
+                              id="crochetsPerMinute"
+                              type="number"
+                              placeholder="15"
+                              value={timeData.crochetsPerMinute}
+                              onChange={(e) => handleTimeInputChange("crochetsPerMinute", e.target.value)}
+                              className="border-blue-200 focus:border-blue-400"
+                            />
+                            <p className="text-xs text-gray-600">{t.averageSpeed}</p>
+                          </div>
                         </div>
-                      )}
-                    </div>
-                  </div>
 
-                  {/* Stitch Counter Section */}
-                  <div className="space-y-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-medium text-indigo-800">{t.builtInStitchCounter}</h4>
-                      <Badge variant="outline" className="border-indigo-300 text-indigo-600">
-                        {t.liveCounter}
-                      </Badge>
-                    </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="hoursPerDay">{t.hoursPerDay}</Label>
+                            <Input
+                              id="hoursPerDay"
+                              type="number"
+                              step="0.5"
+                              placeholder="2"
+                              value={timeData.hoursPerDay}
+                              onChange={(e) => handleTimeInputChange("hoursPerDay", e.target.value)}
+                              className="border-blue-200 focus:border-blue-400"
+                            />
+                          </div>
 
-                    <div className="text-center space-y-4">
-                      <div className="bg-white rounded-lg p-6 border border-indigo-200">
-                        <div className="text-6xl font-bold text-indigo-900 mb-2">{stitchCounter.currentCount}</div>
-                        {stitchCounter.targetCount > 0 && (
-                          <div className="text-sm text-indigo-600">
-                            of {stitchCounter.targetCount} {t.stitches}
-                            <div className="w-full bg-indigo-100 rounded-full h-2 mt-2">
-                              <div
-                                className="bg-indigo-600 h-2 rounded-full transition-all duration-300"
-                                style={{
-                                  width: `${Math.min(100, (stitchCounter.currentCount / stitchCounter.targetCount) * 100)}%`,
-                                }}
-                              ></div>
+                          <div className="space-y-2">
+                            <Label htmlFor="daysPerWeek">{t.daysPerWeek}</Label>
+                            <Input
+                              id="daysPerWeek"
+                              type="number"
+                              placeholder="5"
+                              value={timeData.daysPerWeek}
+                              onChange={(e) => handleTimeInputChange("daysPerWeek", e.target.value)}
+                              className="border-blue-200 focus:border-blue-400"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="flex items-center space-x-2">
+                            <input
+                              type="checkbox"
+                              checked={timeData.includeBreaks}
+                              onChange={(e) => handleTimeInputChange("includeBreaks", e.target.checked)}
+                              className="rounded border-blue-300 text-blue-600 focus:ring-blue-500"
+                            />
+                            <span className="text-sm">{t.includeBreaks}</span>
+                          </label>
+                          {timeData.includeBreaks && (
+                            <div className="ml-6 space-y-2">
+                              <Label htmlFor="breakPercentage">{t.breakTime}</Label>
+                              <Input
+                                id="breakPercentage"
+                                type="number"
+                                placeholder="20"
+                                value={timeData.breakPercentage}
+                                onChange={(e) => handleTimeInputChange("breakPercentage", e.target.value)}
+                                className="border-blue-200 focus:border-blue-400 w-20"
+                              />
                             </div>
-                          </div>
-                        )}
-                        {stitchCounter.stitchesPerMinute > 0 && (
-                          <div className="text-sm text-indigo-600 mt-2">
-                            {t.speed}: {stitchCounter.stitchesPerMinute} {t.stitches}/min
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="grid grid-cols-3 gap-2">
-                        <Button
-                          onClick={decrementStitch}
-                          variant="outline"
-                          className="border-red-300 text-red-600 hover:bg-red-50 bg-transparent"
-                          disabled={stitchCounter.currentCount === 0}
-                        >
-                          -1
-                        </Button>
-                        <Button
-                          onClick={incrementStitch}
-                          className="bg-indigo-600 hover:bg-indigo-700 text-white text-lg font-bold py-3"
-                        >
-                          +1
-                        </Button>
-                        <Button
-                          onClick={add10Stitches}
-                          variant="outline"
-                          className="border-green-300 text-green-600 hover:bg-green-50 bg-transparent"
-                        >
-                          +10
-                        </Button>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-2">
-                        {!stitchCounter.isActive ? (
-                          <Button
-                            onClick={startCounter}
-                            variant="outline"
-                            className="border-green-300 text-green-600 hover:bg-green-50 bg-transparent"
-                          >
-                            {t.startTimer}
-                          </Button>
-                        ) : (
-                          <Button
-                            onClick={stopCounter}
-                            variant="outline"
-                            className="border-orange-300 text-orange-600 hover:bg-orange-50 bg-transparent"
-                          >
-                            {t.stopTimer}
-                          </Button>
-                        )}
-                        <Button
-                          onClick={resetCounter}
-                          variant="outline"
-                          className="border-gray-300 text-gray-600 hover:bg-gray-50 bg-transparent"
-                        >
-                          {t.reset}
-                        </Button>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <Label htmlFor="targetStitches" className="text-sm">
-                            {t.target}:
-                          </Label>
-                          <Input
-                            id="targetStitches"
-                            type="number"
-                            placeholder="100"
-                            className="w-20 h-8 text-sm border-indigo-200"
-                            onChange={(e) => setTargetCount(Number.parseInt(e.target.value) || 0)}
-                          />
-                          <span className="text-sm text-gray-600">{t.stitches}</span>
+                          )}
                         </div>
-
-                        {stitchCounter.stitchesPerMinute > 0 && (
-                          <Button
-                            onClick={useCounterForEstimate}
-                            variant="outline"
-                            className="w-full border-indigo-300 text-indigo-600 hover:bg-indigo-50 text-sm bg-transparent"
-                          >
-                            {t.useThisSpeed} ({stitchCounter.stitchesPerMinute}/min)
-                          </Button>
-                        )}
                       </div>
-                    </div>
-
-                    <div className="text-xs text-indigo-600 bg-indigo-50 p-2 rounded">{t.counterTip}</div>
+                    )}
                   </div>
 
                   <Button
@@ -1206,145 +1349,6 @@ export default function CrochetCalculatorApp() {
             </div>
           </TabsContent>
 
-          {/* History Tab */}
-          <TabsContent value="history" className="space-y-6">
-            <Card className="bg-white/70 backdrop-blur-sm border-purple-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-purple-800">
-                  <History className="w-5 h-5" />
-                  {t.projectHistory}
-                </CardTitle>
-                <CardDescription>{t.projectHistoryDesc}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                {projectHistory.length > 0 ? (
-                  <div className="space-y-4">
-                    {projectHistory.map((item) => (
-                      <div
-                        key={item.id}
-                        className={`p-4 rounded-lg border-2 ${
-                          item.type === "pricing"
-                            ? "bg-gradient-to-r from-rose-50 to-orange-50 border-rose-200"
-                            : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
-                        }`}
-                      >
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3
-                              className={`font-semibold text-lg ${
-                                item.type === "pricing" ? "text-rose-800" : "text-blue-800"
-                              }`}
-                            >
-                              {item.projectName || t.unnamedProject}
-                            </h3>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                              {item.type === "pricing" ? (
-                                <DollarSign className="w-4 h-4" />
-                              ) : (
-                                <Clock className="w-4 h-4" />
-                              )}
-                              <span className="capitalize">
-                                {item.type === "pricing" ? t.pricingCalculation : t.timeCalculation}
-                              </span>
-                              <span>•</span>
-                              <span>{item.timestamp.toLocaleDateString()}</span>
-                              <span>
-                                {item.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                              </span>
-                            </div>
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className={
-                              item.type === "pricing"
-                                ? "border-rose-300 text-rose-600"
-                                : "border-blue-300 text-blue-600"
-                            }
-                          >
-                            {item.type === "pricing" ? t.pricing : t.time}
-                          </Badge>
-                        </div>
-
-                        {item.type === "pricing" ? (
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-white/50 p-3 rounded border border-rose-200">
-                              <div className="text-sm text-rose-600 mb-1">{t.adjustedTime}</div>
-                              <div className="text-lg font-bold text-rose-800">
-                                {item.results.adjustedTime.toFixed(1)} {t.hours}
-                              </div>
-                            </div>
-                            <div className="bg-white/50 p-3 rounded border border-rose-200">
-                              <div className="text-sm text-rose-600 mb-1">{t.totalCost}</div>
-                              <div className="text-lg font-bold text-rose-800">
-                                {formatCurrency(item.results.totalCost, language)}
-                              </div>
-                            </div>
-                            <div className="bg-white/50 p-3 rounded border border-rose-200">
-                              <div className="text-sm text-rose-600 mb-1">{t.suggestedSellingPrice}</div>
-                              <div className="text-lg font-bold text-rose-800">
-                                {formatCurrency(item.results.suggestedPrice, language)}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <div className="bg-white/50 p-3 rounded border border-blue-200">
-                              <div className="text-sm text-blue-600 mb-1">{t.totalTime}</div>
-                              <div className="text-lg font-bold text-blue-800">
-                                {item.results.adjustedTimeHours.toFixed(1)} {t.hours}
-                              </div>
-                            </div>
-                            <div className="bg-white/50 p-3 rounded border border-blue-200">
-                              <div className="text-sm text-blue-600 mb-1">{t.estimatedDays}</div>
-                              <div className="text-lg font-bold text-blue-800">
-                                {Math.ceil(item.results.estimatedDays)} {t.days}
-                              </div>
-                            </div>
-                            <div className="bg-white/50 p-3 rounded border border-blue-200">
-                              <div className="text-sm text-blue-600 mb-1">{t.completionDate}</div>
-                              <div className="text-lg font-bold text-blue-800">{item.results.completionDate}</div>
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="mt-3 flex flex-wrap gap-2 text-xs">
-                          <span
-                            className={`px-2 py-1 rounded ${
-                              item.type === "pricing" ? "bg-rose-100 text-rose-700" : "bg-blue-100 text-blue-700"
-                            }`}
-                          >
-                            {item.data.projectType?.replace("_", " ")} • {item.data.projectSize}
-                          </span>
-                          <span
-                            className={`px-2 py-1 rounded ${
-                              item.type === "pricing" ? "bg-rose-100 text-rose-700" : "bg-blue-100 text-blue-700"
-                            }`}
-                          >
-                            {item.data.difficultyLevel} {t.difficulty.toLowerCase()}
-                          </span>
-                          <span
-                            className={`px-2 py-1 rounded ${
-                              item.type === "pricing" ? "bg-rose-100 text-rose-700" : "bg-blue-100 text-blue-700"
-                            }`}
-                          >
-                            {item.data.stitchComplexity} {t.stitches.toLowerCase()}
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-gray-500">
-                    <History className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-medium mb-2">{t.noHistoryYet}</h3>
-                    <p className="text-sm">{t.noHistoryDesc}</p>
-                    <p className="text-xs mt-2 text-gray-400">{t.historyTip}</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           {/* AI Generate Tab (Coming Soon) */}
           <TabsContent value="ai-generate">
             <Card className="bg-white/70 backdrop-blur-sm border-rose-200">
@@ -1427,3 +1431,4 @@ export default function CrochetCalculatorApp() {
     </div>
   )
 }
+
